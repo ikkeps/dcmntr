@@ -19,19 +19,21 @@ class PageStructureCallable(Protocol):
 
 
 def layout_multipage_document(
-    page_size: Size, page_structure_f: PageStructureCallable, content: Node
+    page_size: Size,
+    page_structure_f: PageStructureCallable,
+    content: Node,
+    debug: bool = False,
 ) -> Iterable[tuple[Size, Layout]]:
     content_x, content_y, content_size = measure_content_size(page_size, page_structure_f)
 
     page_index = 0
     page_content: Node | None = content
     while page_content is not None:
-        ctx = LayoutCtx(page_index=page_index)
+        ctx = LayoutCtx(page_index=page_index, debug=debug)
         content_layout = ctx.page_ctx().layout_node(
             page_content, constraints=content_size.to_constraints_max(), x=content_x, y=content_y
         )
 
-        # XXX stip leftover so we can fit anything (weird)
         page = page_structure_f(
             PreLaidOutNode(content_layout.strip_leftover()),
             LayoutQuery(content_layout, page_index),
@@ -91,6 +93,7 @@ class PreLaidOutNode(Node):
         node_layout = self.layout_to_return.layout
         if node_layout.node_override is None:
             node_layout = node_layout.set_node_override(self.layout_to_return.node)
+
         return node_layout
 
 
@@ -118,6 +121,24 @@ class NoBrake(Node):
 
 
 no_break = NoBrake()
+
+
+@dataclass(frozen=True)
+class PageBreak(LeafNode):
+
+    def layout(self, ctx: NodeLayoutCtx, constraints: Constraints) -> NodeLayout:
+        assert (
+            ctx.can_split
+        ), "Page break can be done only in page context (parent must be able to split)."
+        return NodeLayout(
+            size=Size(0, 0),
+            node_override=Node(),  # Do not render
+            children=(),
+            leftover=Node(),  # Do not render
+        )
+
+
+page_break = PageBreak()
 
 
 def render_multipage(

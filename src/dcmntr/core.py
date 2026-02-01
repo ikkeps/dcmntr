@@ -154,7 +154,13 @@ class NodeLayout:
         return NodeLayout(**{**self.__dict__, "node_override": node_override})
 
     def strip_leftover(self) -> NodeLayout:
-        return NodeLayout(**{**self.__dict__, "leftover": None})
+        return NodeLayout(
+            **{
+                **self.__dict__,
+                "leftover": None,
+                "children": tuple(l.strip_leftover() for l in self.children),
+            }
+        )
 
 
 @dataclass(frozen=True, init=False)
@@ -286,7 +292,7 @@ class NodeLayoutCtx:
 
         if self.ctx.debug:
             print(
-                f"{node_ctx.get_current_path_readable()} <{node_ctx.x},{node_ctx.y}> can_split={node_ctx.can_split} {constraints} "
+                f"{node_ctx.get_current_path_readable()} ({layout.node_override}) <{node_ctx.x},{node_ctx.y}> can_split={node_ctx.can_split} {constraints} "
                 + f" --> {layout.size}"
             )
 

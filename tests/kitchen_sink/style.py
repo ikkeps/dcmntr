@@ -37,7 +37,7 @@ def code(text: str) -> Node:
     return simple_text(text, mono_font, color=text_color)
 
 
-br = box(height=15, width=15)
+br = box(height=1)
 
 
 def underline(color: Color, width: int = 1) -> Node:

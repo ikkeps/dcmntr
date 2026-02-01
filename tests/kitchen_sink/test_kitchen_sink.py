@@ -3,7 +3,12 @@ from pathlib import Path
 from typing import Callable
 
 from dcmntr.layout_query import LayoutQuery
-from dcmntr.paging import render_multipage_document, layout_multipage_document, render_multipage
+from dcmntr.paging import (
+    render_multipage_document,
+    layout_multipage_document,
+    render_multipage,
+    page_break,
+)
 
 from tests.kitchen_sink.style import *
 
@@ -87,10 +92,7 @@ def kitchen_sink() -> Node:
             "that can fit all the children, except ",
             code("expand()"),
             " node, which will expand as much as it's",
-            "parent allows",
-            "another example is layers (see ",
-            figure_ref("layers"),
-            ")",
+            "parent allows. ",
             br,
             "Boundaries of elements are highlighted ",
             highlight_size(p("like this")),
@@ -169,10 +171,10 @@ def kitchen_sink() -> Node:
                 *itertools.islice(
                     itertools.cycle(
                         [
-                            outline(fill="green")(box(123, 15)),
-                            outline(fill="red")(box(80, 33)),
-                            outline(fill="blue")(box(200, 24)),
-                            outline(fill="magenta")(box(123, 27)),
+                            outline(fill="lightgreen")(box(123, 15)),
+                            outline(fill="yellow")(box(80, 33)),
+                            outline(fill="lightblue")(box(200, 24)),
+                            outline(fill="pink")(box(123, 27)),
                             outline(fill="cyan")(box(140, 5)),
                         ]
                     ),
@@ -191,12 +193,13 @@ def kitchen_sink() -> Node:
         figure(ctx, "layers", "Simple layering example"),
         highlight_size(
             layers(
-                outline(fill="green")(box(120, 30)(p("first layer"))),
+                outline(fill="lightgreen")(box(200, 100)(p("first layer"))),
                 padding(top=10, left=10)(
-                    outline(fill=(255, 0, 255, 128))(box(100, 40)(p("second layer"))),
+                    outline(fill="pink")(box(130, 100)(p("second layer"))),
                 ),
             )
         ),
+        page_break,
         h2("Divisions"),
         txt(
             "With ",
@@ -260,13 +263,27 @@ def kitchen_sink() -> Node:
             " and simple layers example is ",
             figure_ref("layers"),
         ),
+        page_break,
         h2("Paging"),
         txt(
             "There is a paging support with",
             " page structure ",
             "(content that is present on every page). ",
             "The content window size is calculated",
-            "automatically based on the page structure",
+            "automatically based on the page structure. ",
+            code("layout_multipage_document(...)"),
+            " gets ",
+            code("page_structure_f"),
+            " callable that gets Node ",
+            "(page content)",
+            " and return Node. ",
+            "(full page layout). ",
+            "Each page's content being laid out",
+            " and passed to ",
+            code("page_structure_f"),
+            " which can use page content to e.g.",
+            "insert header that changes depending ",
+            "on captions presented on the current page. ",
         ),
     )
     return materialize_deferred(ctx, doc)
@@ -275,7 +292,10 @@ def kitchen_sink() -> Node:
 def test_kitchen_sink(image_snapshot: Callable[..., None]) -> None:
     page_size = Size(210 * 5, 297 * 5)
     pages = layout_multipage_document(
-        page_size, page_structure_f=page_structure, content=kitchen_sink()
+        page_size,
+        page_structure_f=page_structure,
+        content=kitchen_sink(),
+        debug=True,
     )
     for idx, img in enumerate(render_multipage_document(pages)):
         image_snapshot(img, SNAPSHOTS_PATH / f"kitchen_sink_{idx}.png")

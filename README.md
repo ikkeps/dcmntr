@@ -70,7 +70,7 @@ But also:
 
 ![kitchen sink page 0](./tests/kitchen_sink/kitchen_sink_snapshots/kitchen_sink_0.png)
 ![kitchen sink page 1](./tests/kitchen_sink/kitchen_sink_snapshots/kitchen_sink_1.png)
-
+![kitchen sink page 2](./tests/kitchen_sink/kitchen_sink_snapshots/kitchen_sink_2.png)
 
 ## Not implemented yet
 
@@ -90,8 +90,6 @@ But also:
 * Check for negative Size and Constraints.
 
 ### Layout
-* Multipage rendering
-  * Page break node
 * Add option for box to fit to content in some dimension
   * it is either fixed or infinitely expanding at the moment
 * Add higher level layout module with predefined elements for specific usecases
