@@ -1,0 +1,34 @@
+[project]
+name = "dcmntr"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "coverage>=7.13.2",
+    "pillow",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "black>=25.12.0",
+    "mypy>=1.19.1",
+    "pytest>=9.0.2",
+    "pytest-image-snapshot[pixelmatch]>=0.4.5",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dcmntr"]
+
+# Dev setup
+
+[tool.black]
+line-length = 100
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests"]
