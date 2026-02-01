@@ -1,12 +1,30 @@
 [project]
 name = "dcmntr"
 version = "0.1.0"
-description = "Add your description here"
+authors = [
+  { name="Alexander Neganov", email="ikkeps@gmail.com" },
+]
+description = "Pure python document layout library"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+    "Development Status :: 4 - Beta",
+    "Topic :: Multimedia :: Graphics :: Presentation",
+]
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.13"
 dependencies = [
     "coverage>=7.13.2",
     "pillow",
 ]
+
+[project.urls]
+Homepage = "https://github.com/ikkeps/dcmntr"
+Issues = "https://github.com/ikkeps/dcmntr/issues"
+
+# Dev setup
 
 [build-system]
 requires = ["hatchling"]
@@ -22,8 +40,6 @@ dev = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/dcmntr"]
-
-# Dev setup
 
 [tool.black]
 line-length = 100

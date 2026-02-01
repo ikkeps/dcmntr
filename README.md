@@ -1,5 +1,3 @@
-from documenter.basic_layout import simple_textfrom kitchen_sink.style import mono_font
-
 # dcmntr
 
 Pure(ish) Python Document generation library. Inspired by [Typst](https://typst.app).
@@ -40,7 +38,7 @@ A: Yes, you can. However:
 * It needs a several dependencies, including parts of X window.
 * It silently hides elements that do not fit.
 * Bulky reset css.
-* Good luck doing weird stuff with it (like multipage document with )
+* Good luck doing weird stuff with it (like multipage document with different layout per page or stretchable page)
 
 ### Q: Byt why?
 A: Just because you can do things.
