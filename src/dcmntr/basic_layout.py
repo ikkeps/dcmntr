@@ -1,4 +1,5 @@
 from PIL.ImageFont import FreeTypeFont
+from PIL import features as PIL_features
 
 from dcmntr.core import *
 from dataclasses import dataclass
@@ -145,10 +146,17 @@ class SimpleText(LeafNode):
     spacing: float = 2
     antialiasing: bool = True
 
+    LIGA_AND_KERN_SUPPORTED = PIL_features.check("raqm")
+
     def draw_image(self, x: float, y: float, layout: Layout, draw_ctx: ImageDrawCtx) -> None:
         draw_ctx.draw.fontmode = "L" if self.antialiasing else "1"
         draw_ctx.draw.text(
-            (x, y), self.text, fill=self.color, font=self.font.pil_font, spacing=self.spacing
+            (x, y),
+            self.text,
+            fill=self.color,
+            font=self.font.pil_font,
+            spacing=self.spacing,
+            features=["liga", "kern"] if self.LIGA_AND_KERN_SUPPORTED else None,
         )
 
     def layout(self, ctx: NodeLayoutCtx, constraints: Constraints) -> NodeLayout:

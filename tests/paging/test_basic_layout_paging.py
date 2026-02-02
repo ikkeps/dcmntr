@@ -9,7 +9,7 @@ from dcmntr.paging import render_multipage, document_to_pages
 
 SNAPSHOTS_PATH = Path(__file__).parent / "paging_snapshots"
 
-text_font = Fonts().load_builtin(14)
+text_font = Fonts().load("arial", 14, bold=False)
 
 
 def stack_item(color: str) -> Node:

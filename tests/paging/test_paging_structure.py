@@ -9,7 +9,7 @@ from dcmntr.paging import layout_multipage_document, render_multipage_document
 
 SNAPSHOTS_PATH = Path(__file__).parent / "paging_snapshots"
 
-text_font = Fonts().load_builtin(14)
+text_font = Fonts().load("arial", 14, bold=False)
 
 
 def simple_page_structure(

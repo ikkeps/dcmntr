@@ -12,7 +12,7 @@ from PIL.ImageFont import FreeTypeFont
 class Font:
     cache: Fonts
     pil_font: FreeTypeFont
-    name: str | None
+    name: str
     size: int
     bold: bool
     italic: bool
@@ -31,21 +31,15 @@ class Font:
 
 @dataclass
 class Fonts:
-    cache: dict[tuple[str | None, int, bool, bool], Font] = field(default_factory=dict)
+    cache: dict[tuple[str, int, bool, bool], Font] = field(default_factory=dict)
 
-    def load_builtin(self, size: int) -> Font:
-        return self.load(None, size=size)
-
-    def load(self, name: str | None, size: int, bold: bool = False, italic: bool = False) -> Font:
+    def load(self, name: str, size: int, bold: bool = False, italic: bool = False) -> Font:
         key = (name, size, bold, italic)
         font = self.cache.get(key)
         if font is not None:
             return font
 
-        if name is None:
-            pil_font = cast(FreeTypeFont, ImageFont.load_default(size))
-        else:
-            pil_font = self.load_from_fonttools(name, size, bold, italic)
+        pil_font = self.load_from_fonttools(name, size, bold, italic)
 
         font = Font(
             self,
@@ -72,4 +66,8 @@ class Fonts:
             text=True,
         ).strip()
         # FIXME handle not found?
-        return ImageFont.truetype(path, size)
+        return ImageFont.truetype(
+            path,
+            size,
+            layout_engine=ImageFont.Layout.RAQM,
+        )
