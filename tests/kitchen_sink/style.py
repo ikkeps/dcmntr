@@ -1,8 +1,8 @@
-from dcmntr.font import Fonts
 from dataclasses import dataclass, field
 from dcmntr.helpers import SectionNumbering, Anchors
 from dcmntr.core import *
 from dcmntr.basic_layout import *
+from dcmntr.text import *
 
 text_color = "black"
 fonts = Fonts()

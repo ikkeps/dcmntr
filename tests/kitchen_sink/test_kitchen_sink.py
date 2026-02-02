@@ -6,7 +6,6 @@ from dcmntr.layout_query import LayoutQuery
 from dcmntr.paging import (
     render_multipage_document,
     layout_multipage_document,
-    render_multipage,
     page_break,
 )
 
@@ -295,7 +294,7 @@ def test_kitchen_sink(image_snapshot: Callable[..., None]) -> None:
         page_size,
         page_structure_f=page_structure,
         content=kitchen_sink(),
-        debug=True,
+        debug=False,
     )
     for idx, img in enumerate(render_multipage_document(pages)):
         image_snapshot(img, SNAPSHOTS_PATH / f"kitchen_sink_{idx}.png")

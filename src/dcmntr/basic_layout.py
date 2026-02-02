@@ -1,6 +1,3 @@
-from PIL.ImageFont import FreeTypeFont
-from PIL import features as PIL_features
-
 from dcmntr.core import *
 from dataclasses import dataclass
 
@@ -18,7 +15,6 @@ __all__ = [
     "v_stack",
     "padding",
     "box",
-    "simple_text",
     "outline",
     "box",
     "right",
@@ -31,8 +27,6 @@ __all__ = [
     "h_divide",
     "v_divide",
 ]
-
-from dcmntr.font import Font
 
 type Color = str | tuple[int, int, int] | tuple[int, int, int, int]
 
@@ -134,58 +128,6 @@ class Box(Node):
 
 box: type[Box] = Box
 expand = box(width=INFINITY, height=INFINITY)
-
-
-@dataclass(frozen=True)
-class SimpleText(LeafNode):
-    """Simple non-word wrapping text"""
-
-    text: str
-    font: Font
-    color: Color = "black"
-    spacing: float = 2
-    antialiasing: bool = True
-
-    LIGA_AND_KERN_SUPPORTED = PIL_features.check("raqm")
-
-    def draw_image(self, x: float, y: float, layout: Layout, draw_ctx: ImageDrawCtx) -> None:
-        draw_ctx.draw.fontmode = "L" if self.antialiasing else "1"
-        draw_ctx.draw.text(
-            (x, y),
-            self.text,
-            fill=self.color,
-            font=self.font.pil_font,
-            spacing=self.spacing,
-            features=["liga", "kern"] if self.LIGA_AND_KERN_SUPPORTED else None,
-        )
-
-    def layout(self, ctx: NodeLayoutCtx, constraints: Constraints) -> NodeLayout:
-        width, height = self.multiline_text_size(self.text, self.font.pil_font, self.spacing)
-        return NodeLayout(Size(width, height), ())
-
-    # FIXME not accurate :(
-    @staticmethod
-    def multiline_text_size(
-        text: str, font: FreeTypeFont, spacing: float, align: str = "left"
-    ) -> tuple[float, float]:
-
-        lines = text.splitlines() or [""]
-
-        ascent, descent = font.getmetrics()
-        line_height = ascent + descent
-
-        widths = []
-        for line in lines:
-            bbox = font.getbbox(line)
-            widths.append(bbox[2] - bbox[0])
-
-        max_width = max(widths)
-        total_height = line_height * len(lines) + spacing * (len(lines) - 1)
-
-        return max_width, total_height
-
-
-simple_text = SimpleText
 
 
 @dataclass(frozen=True)

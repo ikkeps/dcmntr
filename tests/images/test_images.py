@@ -3,7 +3,7 @@ from typing import Callable
 
 from dcmntr.core import *
 from dcmntr.basic_layout import *
-from dcmntr.font import Fonts
+from dcmntr.text import *
 from dcmntr.images import img_from_file
 from dcmntr.paging import render_multipage
 

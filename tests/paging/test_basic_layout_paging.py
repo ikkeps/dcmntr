@@ -4,7 +4,7 @@ import itertools
 
 from dcmntr.basic_layout import *
 from dcmntr.paging import *
-from dcmntr.font import Fonts
+from dcmntr.text import *
 from dcmntr.paging import render_multipage, document_to_pages
 
 SNAPSHOTS_PATH = Path(__file__).parent / "paging_snapshots"
