@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import math
 from typing import Any, Generator, Callable, Iterable
 from weakref import WeakKeyDictionary
@@ -151,15 +151,13 @@ class NodeLayout:
         object.__setattr__(self, "size", size)
 
     def set_node_override(self, node_override: Node) -> NodeLayout:
-        return NodeLayout(**{**self.__dict__, "node_override": node_override})
+        return replace(self, node_override=node_override)
 
     def strip_leftover(self) -> NodeLayout:
-        return NodeLayout(
-            **{
-                **self.__dict__,
-                "leftover": None,
-                "children": tuple(l.strip_leftover() for l in self.children),
-            }
+        return replace(
+            self,
+            leftover=None,
+            children=tuple(l.strip_leftover() for l in self.children),
         )
 
 
@@ -172,13 +170,9 @@ class Node:
     )
 
     def clone_without_children(self, **values: Any) -> Node:
-        clone = type(self)(
-            **{name: value for name, value in self.__dict__.items() if name != "children"}
-        )
-
-        for f, v in values.items():
-            object.__setattr__(clone, f, v)
-
+        children = values.pop("children", ())
+        clone = replace(self, **values)
+        object.__setattr__(clone, "children", children)
         return clone
 
     def layout(self, ctx: NodeLayoutCtx, constraints: Constraints) -> NodeLayout:
@@ -236,7 +230,7 @@ class Layout:
         return self.node if self.layout.node_override is None else self.layout.node_override
 
     def strip_leftover(self) -> Layout:
-        return Layout(**{**self.__dict__, "layout": self.layout.strip_leftover()})
+        return replace(self, layout=self.layout.strip_leftover())
 
 
 @dataclass
@@ -338,14 +332,12 @@ class NodeLayoutCtx:
         return l
 
     def clone_for_child(self, node: Node, x: float, y: float) -> NodeLayoutCtx:
-        return NodeLayoutCtx(
-            **{
-                **self.__dict__,
-                "parent": self,
-                "node": node,
-                "x": self.x + x,
-                "y": self.y + y,
-            }
+        return replace(
+            self,
+            parent=self,
+            node=node,
+            x=self.x + x,
+            y=self.y + y,
         )
 
     def get_current_path(self) -> list[NodeLayoutCtx]:
