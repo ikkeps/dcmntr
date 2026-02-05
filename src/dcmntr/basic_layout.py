@@ -76,15 +76,15 @@ class Stack(Node):
                 break
             layouts.append(layout)
 
+            step = layout.layout.size.mul(self.direction)
+            x += step.width
+            y += step.height
+            max_size = layout.layout.size.max(max_size)
+            constraints_left = constraints_left.shrink_by(step.width, step.height)
+
             if layout.layout.leftover is not None:
                 leftover = self(layout.layout.leftover, *self.children[idx + 1 :])
                 break
-
-            step = layout.layout.size.mul(self.direction)
-            max_size = layout.layout.size.max(max_size)
-            x += step.width
-            y += step.height
-            constraints_left = constraints_left.shrink_by(step.width, step.height)
 
         if self.direction.height:
             size = Size(max_size.width, y)
@@ -321,7 +321,7 @@ class Padding(Node):
 
     def layout(self, ctx: NodeLayoutCtx, constraints: Constraints) -> NodeLayout:
         if len(self.children) == 0:
-            return NodeLayout(constraints.min_size(), ())
+            return NodeLayout(Size(self.left + self.right, self.top + self.bottom), ())
         assert len(self.children) == 1
         if constraints.max_width < self.left + self.right:
             raise LayoutCrossAxisOverflowException(
@@ -329,11 +329,11 @@ class Padding(Node):
                 constraints=constraints,
                 size=Size(self.left + self.right, 0),
             )
-        if constraints.max_height < self.top:
+        if constraints.max_height < self.top + self.bottom:
             raise LayoutAxisOverflowException(
                 node=self,
                 constraints=constraints,
-                size=Size(self.left + self.right, self.top),
+                size=Size(self.left + self.right, self.top + self.bottom),
             )
         new_constraints = constraints.shrink_by(self.left + self.right, self.top + self.bottom)
 

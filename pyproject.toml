@@ -11,12 +11,13 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
     "Development Status :: 4 - Beta",
     "Topic :: Multimedia :: Graphics :: Presentation",
+    "License :: OSI Approved :: MIT License",
 ]
+keywords = ["document", "layout", "graphics", "pdf"]
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.13"
 dependencies = [
-    "coverage>=7.13.2",
     "pillow",
 ]
 
@@ -33,6 +34,7 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
     "black>=25.12.0",
+    "coverage>=7.13.2",
     "mypy>=1.19.1",
     "pytest>=9.0.2",
     "pytest-image-snapshot[pixelmatch]>=0.4.5",
@@ -45,6 +47,6 @@ packages = ["src/dcmntr"]
 line-length = 100
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.13"
 strict = true
 files = ["src", "tests"]
