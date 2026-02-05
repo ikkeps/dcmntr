@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
+from functools import wraps
 import math
 from typing import Any, Generator, Callable, Iterable
 from weakref import WeakKeyDictionary
@@ -16,6 +17,9 @@ __all__ = [
     "NodeLayout",
     "Node",
     "LeafNode",
+    "Tag",
+    "tag_with_value",
+    "with_tag",
     "deferred",
     "materialize_deferred",
     "walk_layout",
@@ -145,7 +149,6 @@ class NodeLayout:
     cached: Any = None
     node_override: Node | None = None
     leftover: Node | None = None
-    tags: WeakKeyDictionary[Node, Any] = field(default_factory=WeakKeyDictionary)
 
     def update_size_inplace(self, size: Size) -> None:
         object.__setattr__(self, "size", size)
@@ -348,6 +351,26 @@ class NodeLayoutCtx:
             ctx = ctx.parent
         chain.reverse()
         return chain
+
+
+@dataclass(frozen=True)
+class Tag(Node):
+    key: str
+    value: Any
+
+
+tag_with_value: type[Tag] = Tag
+
+
+def with_tag(key: str) -> Callable[[Callable[[Any], Node]], Callable[[Any], Node]]:
+    def decorator(fn: Callable[[Any], Node]) -> Callable[[Any], Node]:
+        @wraps(fn)
+        def wrapper(value: Any) -> Node:
+            return Tag(key, value)(fn(value))
+
+        return wrapper
+
+    return decorator
 
 
 @dataclass

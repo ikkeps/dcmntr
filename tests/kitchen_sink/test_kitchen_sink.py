@@ -24,7 +24,11 @@ def page_structure(content: Node, page_content_lookup_cache: LayoutQuery | None 
         ),
     )
 
-    first_h2 = "FIXME use page_content_lookup_cache.get_layout_by_node_class()"
+    if page_content_lookup_cache is not None:
+        first_h2 = (page_content_lookup_cache.get_values_by_tag("h2") or [""])[0]
+    else:
+        first_h2 = "Very long h2 header for test"
+    first_h2 = f"Section: {first_h2}"
     header = right(
         bottom(padding(bottom=10, right=20)(simple_text(first_h2, font=p_font, color="black")))
     )
@@ -82,7 +86,6 @@ def kitchen_sink() -> Node:
 
     doc = v_stack(
         h1("dcmntr"),
-        right(p(""""Kitchen sink" example""")),
         h2("Basics"),
         txt(
             "Every node in ",

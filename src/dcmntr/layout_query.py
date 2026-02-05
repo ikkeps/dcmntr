@@ -1,22 +1,33 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Any
 
-from dcmntr.core import Layout
+from dcmntr.core import Layout, Tag
 
 
 @dataclass
 class LayoutQuery:
     layout: Layout
     page_idx: int
+    _tag_cache: dict[str, list[Any]] = field(default_factory=dict, init=False, repr=False)
+    _tag_cache_built: bool = field(default=False, init=False, repr=False)
 
-    def get_layout_by_node_class(self, cls: type) -> Layout | None:
+    def _build_tag_cache(self) -> None:
+        if self._tag_cache_built:
+            return
 
-        def node_layout(layout: Layout) -> Layout | None:
-            if isinstance(layout.node, cls):
-                return layout
-            for c in layout.layout.children:
-                l = node_layout(c)
-                if l is not None:
-                    return l
-            return None
+        cache: dict[str, list[Any]] = {}
 
-        return node_layout(self.layout)
+        def visit(layout: Layout) -> None:
+            node = layout.get_node()
+            if isinstance(node, Tag):
+                cache.setdefault(node.key, []).append(node.value)
+            for child in layout.layout.children:
+                visit(child)
+
+        visit(self.layout)
+        self._tag_cache = cache
+        self._tag_cache_built = True
+
+    def get_values_by_tag(self, key: str) -> list[Any]:
+        self._build_tag_cache()
+        return self._tag_cache.get(key, [])

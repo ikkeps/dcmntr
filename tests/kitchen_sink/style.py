@@ -54,6 +54,7 @@ def h1(text: str) -> Node:
     return simple_text(text, font=h1_font, color=text_color, spacing=5)
 
 
+@with_tag("h2")
 def h2(text: str) -> Node:
     return padding(top=16, bottom=4)(
         underline("gray", width=1)(
